@@ -2,7 +2,6 @@ import discord
 import requests
 import json
 
-
 coin_id = "iota"
 url_coin = f"https://api.coingecko.com/api/v3/coins/{coin_id}"
 
@@ -15,7 +14,7 @@ class MyClient(discord.Client):
         if message.author == self.user:
             return
 
-        if message.content == 'p':
+        if message.content in ['p', 'price']:
             response = requests.get(url_coin)
             iota_prices = json.loads(response.text)
             marketcaprank = iota_prices["market_cap_rank"]
