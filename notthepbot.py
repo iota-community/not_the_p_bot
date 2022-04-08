@@ -20,15 +20,22 @@ class MyClient(discord.Client):
             marketcaprank = iota_prices["market_cap_rank"]
             currentprice = round(iota_prices["market_data"]["current_price"]["usd"], 4)
             change24hours = round(iota_prices["market_data"]["price_change_percentage_24h"], 1)
-            change1hour = round(iota_prices["market_data"]["price_change_percentage_24h"] / 24, 1)
-            print (iota_prices["market_cap_rank"])
-            embedVar=discord.Embed(title =  str(iota_prices["name"]) + " #" + str(marketcaprank), color = 0xff7800)
+            change1hour = round(iota_prices["market_data"]["price_change_percentage_1h_in_currency"]["usd"], 1)
+            
+            if change1hour >= 0:
+                if change1hour == 0:
+                    embedcolor = 0xff7800
+                else:
+                    embedcolor = 0x33d17a
+            else:
+                embedcolor = 0xe01b24
+            
+            embedVar=discord.Embed(title =  str(iota_prices["name"]) + " #" + str(marketcaprank), color = embedcolor)
             embedVar.add_field(name="USD", value=str(currentprice), inline=True)
-            embedVar.add_field(name="1h", value=str(change1hour) + "%", inline=True)
+            embedVar.add_field(name="1h", value=str(change1hour) + "$", inline=True)
             embedVar.add_field(name="24h", value=str(change24hours) + "%", inline=True)
             embedVar.add_field(name="Source", value="Coingecko", inline=False)
-            #print (embedVar)
-            #await message.channel.send(iota_prices["market_cap_rank"])
+
             await message.channel.send(embed=embedVar)
 
 intents = discord.Intents.default()
