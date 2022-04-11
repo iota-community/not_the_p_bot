@@ -12,7 +12,7 @@ url_coin = f"https://api.coingecko.com/api/v3/coins/{coin_id}"
 # cache API requests to sqlite for 300 seconds
 requests_cache.install_cache(cache_name='coingecko_api_cache', expire_after = 300)
 # discord channels filtering
-discord_channels = [738665041217323068, 960905086882680833]
+discord_channels = [738665041217323068]
 
 class ReplyClient(discord.Client):
     # define sleep_switch to zero
