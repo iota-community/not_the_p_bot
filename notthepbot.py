@@ -12,11 +12,13 @@ url_coin = f"https://api.coingecko.com/api/v3/coins/{coin_id}"
 # cache API requests to sqlite for 300 seconds
 requests_cache.install_cache(cache_name='coingecko_api_cache', expire_after = 300)
 # discord channels filtering
-discord_channels = [738665041217323068]
+discord_channels = [738665041217323068, 960905086882680833]
 
 class ReplyClient(discord.Client):
     # define sleep_switch to zero
     sleep_switch = 0
+    # define input/commands to trigger bot
+    speccommands = ['p', 'price']
 
     # define sleep period, during this time the embed will not be posted to Discord
     def thread_sleep(self):
@@ -36,9 +38,9 @@ class ReplyClient(discord.Client):
         # as long as the sleep_switch is off
         if self.sleep_switch == 0:
             # list of inputs/commands it should listen to
-            speccommands = ['p', 'price']
+            
             # let's read the message
-            if message.content.casefold() in speccommands and message.channel.id in discord_channels:
+            if message.content.casefold() in self.speccommands and message.channel.id in discord_channels:
  
                 # request response from Coingecko API
                 response = requests.get(url_coin)
@@ -81,10 +83,8 @@ class ReplyClient(discord.Client):
             sleep_thread.start()
         # since the sleep_switch is at 1, the bot will only add the reaction to a message and ignore further input/commands    
         else:
-            # list of inputs/commands it should listen to
-            speccommands = ['p', 'price']
             # let's read the message
-            if message.content.casefold() in speccommands and message.channel.id in discord_channels:
+            if message.content.casefold() in self.speccommands and message.channel.id in discord_channels:
                 # react to the message
                 await message.add_reaction("😒")
     
