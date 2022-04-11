@@ -18,7 +18,7 @@ class ReplyClient(discord.Client):
     # define sleep_switch to zero
     sleep_switch = 0
     # define input/commands to trigger bot
-    speccommands = ['p', 'price']
+    speccommands = ['p', 'price', 'rice']
 
     # define sleep period, during this time the embed will not be posted to Discord
     def thread_sleep(self):
