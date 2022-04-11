@@ -38,7 +38,7 @@ class ReplyClient(discord.Client):
             # list of inputs/commands it should listen to
             speccommands = ['p', 'price']
             # let's read the message
-            if message.content.casefold() in str(speccommands).casefold() and message.channel.id in discord_channels:
+            if message.content.casefold() in speccommands and message.channel.id in discord_channels:
  
                 # request response from Coingecko API
                 response = requests.get(url_coin)
@@ -84,7 +84,7 @@ class ReplyClient(discord.Client):
             # list of inputs/commands it should listen to
             speccommands = ['p', 'price']
             # let's read the message
-            if message.content.casefold() in str(speccommands).casefold() and message.channel.id in discord_channels:
+            if message.content.casefold() in speccommands and message.channel.id in discord_channels:
                 # react to the message
                 await message.add_reaction("😒")
     
