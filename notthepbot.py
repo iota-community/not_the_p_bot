@@ -77,10 +77,10 @@ class ReplyClient(discord.Client):
                 # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
                 self.sleep_switch = 1
                 
-            # define a thread for sleeping
-            sleep_thread = threading.Thread(target=self.thread_sleep)
-            # after posting the embed message go to sleep
-            sleep_thread.start()
+                # define a thread for sleeping
+                sleep_thread = threading.Thread(target=self.thread_sleep)
+                # after posting the embed message go to sleep
+                sleep_thread.start()
         # since the sleep_switch is at 1, the bot will only add the reaction to a message and ignore further input/commands    
         else:
             # let's read the message
