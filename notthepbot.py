@@ -11,6 +11,8 @@ coin_id = "iota"
 url_coin = f"https://api.coingecko.com/api/v3/coins/{coin_id}"
 # cache API requests to sqlite for 300 seconds
 requests_cache.install_cache(cache_name='coingecko_api_cache', expire_after = 300)
+# discord channels filtering
+discord_channels = [738665041217323068]
 
 class ReplyClient(discord.Client):
     # define sleep_switch to zero
@@ -36,7 +38,7 @@ class ReplyClient(discord.Client):
             # list of inputs/commands it should listen to
             speccommands = ['p', 'price']
             # let's read the message
-            if message.content.casefold() in str(speccommands).casefold():
+            if message.content.casefold() in str(speccommands).casefold() and message.channel.id in discord_channels:
  
                 # request response from Coingecko API
                 response = requests.get(url_coin)
@@ -82,7 +84,7 @@ class ReplyClient(discord.Client):
             # list of inputs/commands it should listen to
             speccommands = ['p', 'price']
             # let's read the message
-            if message.content.casefold() in str(speccommands).casefold():
+            if message.content.casefold() in str(speccommands).casefold() and message.channel.id in discord_channels:
                 # react to the message
                 await message.add_reaction("😒")
     
