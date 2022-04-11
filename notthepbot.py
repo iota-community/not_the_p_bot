@@ -35,13 +35,13 @@ class ReplyClient(discord.Client):
         # don't respond to ourselves
         if message.author == self.user:
             return
-        # as long as the sleep_switch is off
-        if self.sleep_switch == 0:
-            # list of inputs/commands it should listen to
+        
+        # let's read the message
+        if message.content.casefold() in self.speccommands and message.channel.id in discord_channels:
             
-            # let's read the message
-            if message.content.casefold() in self.speccommands and message.channel.id in discord_channels:
- 
+            # as long as the sleep_switch is off
+            if self.sleep_switch == 0:
+                
                 # request response from Coingecko API
                 response = requests.get(url_coin)
 
@@ -81,10 +81,9 @@ class ReplyClient(discord.Client):
                 sleep_thread = threading.Thread(target=self.thread_sleep)
                 # after posting the embed message go to sleep
                 sleep_thread.start()
-        # since the sleep_switch is at 1, the bot will only add the reaction to a message and ignore further input/commands    
-        else:
-            # let's read the message
-            if message.content.casefold() in self.speccommands and message.channel.id in discord_channels:
+                
+            # since the sleep_switch is at 1, the bot will only add the reaction to a message and ignore further input/commands    
+            else:
                 # react to the message
                 await message.add_reaction("😒")
     
