@@ -72,14 +72,12 @@ class ReplyClient(discord.Client):
                 print ("Used Cache: {0}".format(response.from_cache))
                 # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
                 ReplyClient.sleep_switch = 1
-                # print ('i after sending the message is ' + str(ReplyClient.sleep_switch))
             # define a thread for sleeping
             sleep_thread = threading.Thread(target=self.thread_sleep)
             # after posting the embed message go to sleep
             sleep_thread.start()
         # since the sleep_switch is at 1, the bot will only add the reaction to a message and ignore further input/commands    
         else:
-            print ("in the else")
             # list of inputs/commands it should listen to
             speccommands = ['p', 'price']
             # let's read the message
