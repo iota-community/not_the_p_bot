@@ -85,7 +85,7 @@ class ReplyClient(discord.Client):
             # since the sleep_switch is at 1, the bot will only add the reaction to a message and ignore further input/commands    
             else:
                 # react to the message
-                await message.add_reaction("😒")
+                await message.add_reaction("😠")
     
 
                 
