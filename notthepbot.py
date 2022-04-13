@@ -32,6 +32,18 @@ class ReplyClient(discord.Client):
 
     # the discord function
     async def on_message(self, message):
+        # request response from Coingecko API
+        response = requests.get(url_coin)
+
+        # load the json to extract the data we are looking for
+        iota_prices = json.loads(response.text)
+
+        # fill variables
+        marketcaprank = iota_prices["market_cap_rank"]
+        currentprice = round(iota_prices["market_data"]["current_price"]["usd"], 4)
+        change24hours = round(iota_prices["market_data"]["price_change_percentage_24h"], 1)
+        change1hour = round(iota_prices["market_data"]["price_change_percentage_1h_in_currency"]["usd"], 2)
+        
         # don't respond to ourselves
         if message.author == self.user:
             return
@@ -42,17 +54,7 @@ class ReplyClient(discord.Client):
             # as long as the sleep_switch is off
             if self.sleep_switch == 0:
                 
-                # request response from Coingecko API
-                response = requests.get(url_coin)
-
-                # load the json to extract the data we are looking for
-                iota_prices = json.loads(response.text)
-
-                # fill variables
-                marketcaprank = iota_prices["market_cap_rank"]
-                currentprice = round(iota_prices["market_data"]["current_price"]["usd"], 4)
-                change24hours = round(iota_prices["market_data"]["price_change_percentage_24h"], 1)
-                change1hour = round(iota_prices["market_data"]["price_change_percentage_1h_in_currency"]["usd"], 2)
+                
 
                 # change color of the embed based on the value of the change1hour variable
                 if change1hour >= 0:
@@ -86,11 +88,10 @@ class ReplyClient(discord.Client):
             else:
                 # react to the message
                 await message.add_reaction("😠")
-    
+  
 
                 
 # load discord intents
 intents = discord.Intents.default()
 intents.messages = True
 client = ReplyClient(intents=intents)
-client.run(INSERTYOURDISCORDBOTTOKENHERE)
