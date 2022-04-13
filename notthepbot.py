@@ -32,6 +32,10 @@ class ReplyClient(discord.Client):
 
     # the discord function
     async def on_message(self, message):
+        # don't respond to ourselves
+        if message.author == self.user:
+            return
+
         # request response from Coingecko API
         response = requests.get(url_coin)
 
@@ -43,27 +47,23 @@ class ReplyClient(discord.Client):
         currentprice = round(iota_prices["market_data"]["current_price"]["usd"], 4)
         change24hours = round(iota_prices["market_data"]["price_change_percentage_24h"], 1)
         change1hour = round(iota_prices["market_data"]["price_change_percentage_1h_in_currency"]["usd"], 2)
-        
-        # don't respond to ourselves
-        if message.author == self.user:
-            return
+        # change color of the embed based on the value of the change1hour variable
+        if change1hour >= 0:
+            if change1hour == 0:
+                embedcolor = 0xff7800
+            else:
+                embedcolor = 0x33d17a
+        else:
+            embedcolor = 0xe01b24
+
         
         # let's read the message
         if message.content.casefold() in self.speccommands and message.channel.id in discord_channels:
             
             # as long as the sleep_switch is off
             if self.sleep_switch == 0:
-                
-                
-
-                # change color of the embed based on the value of the change1hour variable
-                if change1hour >= 0:
-                    if change1hour == 0:
-                        embedcolor = 0xff7800
-                    else:
-                        embedcolor = 0x33d17a
-                else:
-                    embedcolor = 0xe01b24
+            # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
+                self.sleep_switch = 1    
                 
                 # build the embed message
                 embedVar=discord.Embed(title =  str(iota_prices["name"]) + " #" + str(marketcaprank), color = embedcolor)
@@ -76,8 +76,7 @@ class ReplyClient(discord.Client):
                 await message.channel.send(embed=embedVar)
                 # print to the console if we are using the cache
                 print ("Used Cache: {0}".format(response.from_cache))
-                # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
-                self.sleep_switch = 1
+
                 
                 # define a thread for sleeping
                 sleep_thread = threading.Thread(target=self.thread_sleep)
@@ -88,9 +87,6 @@ class ReplyClient(discord.Client):
             else:
                 # react to the message
                 await message.add_reaction("😠")
-  
-
-                
 # load discord intents
 intents = discord.Intents.default()
 intents.messages = True
