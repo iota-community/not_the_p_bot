@@ -56,6 +56,9 @@ class ReplyClient(discord.Client):
         else:
             embedcolor = 0xe01b24
 
+        # nice
+        if marketcaprank == 69:
+            marketcaprank = "69 (nice!)"
         
         # let's read the message
         if message.content.casefold() in self.speccommands and message.channel.id in discord_channels:
