@@ -60,7 +60,6 @@ class ReplyClient(discord.Client):
                 embedcolor = 0xe01b24
         # Catch exception when CoinGecko API is down
         except Exception as error_message:
-            print ("AAH SHIT!")
             if message.content.casefold() in self.speccommands and message.channel.id in discord_channels:
                 if self.sleep_switch == 0:
             # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
