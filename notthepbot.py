@@ -39,30 +39,42 @@ class ReplyClient(discord.Client):
         # request response from Coingecko API
         response = requests.get(url_coin)
 
-        # load the json to extract the data we are looking for
-        iota_prices = json.loads(response.text)
-
-        # fill variables
-        marketcaprank = iota_prices["market_cap_rank"]
-        currentprice = round(iota_prices["market_data"]["current_price"]["usd"], 4)
-        change24hours = round(iota_prices["market_data"]["price_change_percentage_24h"], 1)
-        change1hour = round(iota_prices["market_data"]["price_change_percentage_1h_in_currency"]["usd"], 2)
-        # change color of the embed based on the value of the change1hour variable
-        if change1hour >= 0:
-            if change1hour == 0:
-                embedcolor = 0xff7800
-            else:
-                embedcolor = 0x33d17a
-        else:
-            embedcolor = 0xe01b24
-
-        # nice
-        if marketcaprank == 69:
-            marketcaprank = "69 (nice!)"
         
+        try:
+            # load the json to extract the data we are looking for
+            iota_prices = json.loads(response.text)
+        
+            # fill variables
+        
+            marketcaprank = iota_prices["market_cap_rank"]
+            currentprice = round(iota_prices["market_data"]["current_price"]["usd"], 4)
+            change24hours = round(iota_prices["market_data"]["price_change_percentage_24h"], 1)
+            change1hour = round(iota_prices["market_data"]["price_change_percentage_1h_in_currency"]["usd"], 2)
+        # change color of the embed based on the value of the change1hour variable
+            if change1hour >= 0:
+                if change1hour == 0:
+                    embedcolor = 0xff7800
+                else:
+                    embedcolor = 0x33d17a
+            else:
+                embedcolor = 0xe01b24
+        # Catch exception when CoinGecko API is down
+        except Exception as error_message:
+            print ("AAH SHIT!")
+            if message.content.casefold() in self.speccommands and message.channel.id in discord_channels:
+                if self.sleep_switch == 0:
+            # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
+                    self.sleep_switch = 1
+                    await message.channel.send("CoinGecko API is down")
+                    # define a thread for sleeping
+                    sleep_thread = threading.Thread(target=self.thread_sleep)
+                    # after posting the embed message go to sleep
+                    sleep_thread.start()
+                else:
+                    await message.add_reaction("🪲")
+            
         # let's read the message
         if message.content.casefold() in self.speccommands and message.channel.id in discord_channels:
-            
             # as long as the sleep_switch is off
             if self.sleep_switch == 0:
             # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
@@ -90,7 +102,11 @@ class ReplyClient(discord.Client):
             else:
                 # react to the message
                 await message.add_reaction("😠")
+    
+
+                
 # load discord intents
 intents = discord.Intents.default()
 intents.messages = True
 client = ReplyClient(intents=intents)
+client.run("INSERYOURDISCORDBOTAPIKEYHERE")
