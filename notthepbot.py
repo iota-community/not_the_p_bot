@@ -62,11 +62,18 @@ class ReplyClient(discord.Client):
         except Exception as error_message:
             if message.content.casefold() in self.speccommands and message.channel.id in discord_channels:
                 if self.sleep_switch == 0:
-            # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
+                    # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
                     self.sleep_switch = 1
-                    await message.channel.send("CoinGecko API is down")
+                    
+                    # build embed error message
+                    cgapiembedVar=discord.Embed(title = "ERROR MESSAGE", color=0xe01b24)
+                    cgapiembedVar.add_field(name="Error type", value="CoinGecko API is down", inline=True)
+                    cgapiembedVar.add_field(name="Info", value="Verify status at https://status.coingecko.com", inline=True)
+                    await message.channel.send(embed=cgapiembedVar)
+                    
                     # define a thread for sleeping
                     sleep_thread = threading.Thread(target=self.thread_sleep)
+                    
                     # after posting the embed message go to sleep
                     sleep_thread.start()
                 else:
