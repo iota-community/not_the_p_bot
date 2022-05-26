@@ -45,12 +45,12 @@ class ReplyClient(discord.Client):
             iota_prices = json.loads(response.text)
         
             # fill variables
-        
             marketcaprank = iota_prices["market_cap_rank"]
             currentprice = round(iota_prices["market_data"]["current_price"]["usd"], 4)
             change24hours = round(iota_prices["market_data"]["price_change_percentage_24h"], 1)
             change1hour = round(iota_prices["market_data"]["price_change_percentage_1h_in_currency"]["usd"], 2)
-        # change color of the embed based on the value of the change1hour variable
+            
+            # change color of the embed based on the value of the change1hour variable
             if change1hour >= 0:
                 if change1hour == 0:
                     embedcolor = 0xff7800
@@ -58,6 +58,12 @@ class ReplyClient(discord.Client):
                     embedcolor = 0x33d17a
             else:
                 embedcolor = 0xe01b24
+                
+        
+            # nice
+            if marketcaprank == 69:
+                marketcaprank = "69 (nice!)"
+                
         # Catch exception when CoinGecko API is down
         except Exception as error_message:
             if message.content.casefold() in self.speccommands and message.channel.id in discord_channels:
