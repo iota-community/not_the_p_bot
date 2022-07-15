@@ -56,7 +56,6 @@ class ReplyClient(discord.Client):
         try:
             vote_response_reply = json.loads(vote_response.text)
 
-            #responses_output = vote_response_reply["data"]["questions"]["0"]["answers"]["0"]["current"]
             response_one_output = vote_response_reply["data"]["questions"][0]["answers"][0]["current"]
             response_two_output = vote_response_reply["data"]["questions"][0]["answers"][1]["current"]
             response_one_formatted = "{:,.0f}".format(response_one_output)
@@ -92,8 +91,8 @@ class ReplyClient(discord.Client):
                 # build the embed message
                 embedVar=discord.Embed(title =  "IOTA vote progress", color = embedcolor)
                 embedVar.add_field(name="Vote context", value="Should we incentivize builders and activity on the Shimmer network by increasing the token supply to give the Shimmer Community Treasury DAO and the Tangle Ecosystem Association (TEA) each 10% of the new total supply?", inline=False)
-                embedVar.add_field(name="Yes", value=str(response_one_formatted) + "i", inline=True)
-                embedVar.add_field(name="No", value=str(response_two_formatted) + "i", inline=True)
+                embedVar.add_field(name="Yes", value=str(response_one_formatted) + " Ki", inline=True)
+                embedVar.add_field(name="No", value=str(response_two_formatted) + " Ki", inline=True)
                 embedVar.add_field(name="Source", value="NÄRD Tech Node", inline=False)
 
                 # reply to the input/command with the embed
