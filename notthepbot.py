@@ -21,7 +21,7 @@ coin_id = "iota"
 # set the URL for the API
 coingecko_url_coin = f"https://api.coingecko.com/api/v3/coins/{coin_id}"
 # cache API requests to sqlite for 300 seconds
-requests_cache.install_cache(cache_name='coingecko_api_cache', expire_after = 300)
+requests_cache.install_cache(cache_name='api_cache', expire_after = 300)
 # discord channels filtering
 discord_channels = [738665041217323068, 997121969969451070]
 
@@ -48,29 +48,26 @@ class ReplyClient(discord.Client):
         if message.author == self.user:
             return
 
-        # votes section
+        # Votes section
         
-
         vote_response = requests.get(url = combined_participation_plugin_url,headers=head)
 
         try:
             vote_response_reply = json.loads(vote_response.text)
-            
-            # get votes from the node response
+
+            # Get results of two options from the node API
             response_one_output = vote_response_reply["data"]["questions"][0]["answers"][0]["current"]
             response_two_output = vote_response_reply["data"]["questions"][0]["answers"][1]["current"]
-            
-            # format response
+            # Format results
             response_one_formatted = "{:,.0f}".format(response_one_output)
             response_two_formatted = "{:,.0f}".format(response_two_output)
             
-            # caluculate percentage
+            # Caluclate percentage P = V/T * 100
             responses_total = response_one_output + response_two_output
             
             response_one_percentage = round((response_one_output/responses_total) * 100, 2)
             response_two_percenttage = round((response_two_output/responses_total) * 100, 2)
-           
-
+            
          # Catch exception when HORNET node API is down
         except Exception as error_message:
             if message.content.casefold() in self.votecommands and message.channel.id in discord_channels:
@@ -90,6 +87,7 @@ class ReplyClient(discord.Client):
                     sleep_thread.start()
                 else:
                     await message.add_reaction("🪲")
+
         # let's read the message
         if message.content.casefold() in self.votecommands and message.channel.id in discord_channels:
             # as long as the sleep_switch is off
@@ -107,7 +105,9 @@ class ReplyClient(discord.Client):
 
                 # reply to the input/command with the embed
                 await message.channel.send(embed=embedVar)
-                            
+                # print to the console if we are using the cache
+                print ("Used Cache: {0}".format(vote_reponse.from_cache))            
+                
                 # define a thread for sleeping
                 sleep_thread = threading.Thread(target=self.thread_sleep)
                 # after posting the embed message go to sleep
@@ -117,17 +117,13 @@ class ReplyClient(discord.Client):
             else:
                 # react to the message
                 await message.add_reaction("😠")
-        else:
-            if message.content.casefold() in self.votecommands and message.channel.id in discord_channels:
-            # as long as the sleep_switch is off
-                if self.sleep_switch == 0:
-                # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
-                    self.sleep_switch = 1    
+
+
         ## Coingecko section
         # request response from Coingecko API
         coingecko_response = requests.get(coingecko_url_coin)
-
-        
+        # request response from Coingecko API
+            
         try:
             # load the json to extract the data we are looking for
             iota_prices = json.loads(coingecko_response.text)
@@ -202,12 +198,6 @@ class ReplyClient(discord.Client):
             else:
                 # react to the message
                 await message.add_reaction("😠")
-        else:
-            if message.content.casefold() in self.votecommands and message.channel.id in discord_channels:
-            # as long as the sleep_switch is off
-                if self.sleep_switch == 0:
-                # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
-                    self.sleep_switch = 1    
     
 
                 
