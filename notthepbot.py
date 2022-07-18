@@ -55,17 +55,21 @@ class ReplyClient(discord.Client):
 
         try:
             vote_response_reply = json.loads(vote_response.text)
-
+            
+            # get votes from the node response
             response_one_output = vote_response_reply["data"]["questions"][0]["answers"][0]["current"]
             response_two_output = vote_response_reply["data"]["questions"][0]["answers"][1]["current"]
+            
+            # format response
             response_one_formatted = "{:,.0f}".format(response_one_output)
             response_two_formatted = "{:,.0f}".format(response_two_output)
+            
+            # caluculate percentage
             responses_total = response_one_output + response_two_output
-            print(responses_total)
+            
             response_one_percentage = round((response_one_output/responses_total) * 100, 2)
             response_two_percenttage = round((response_two_output/responses_total) * 100, 2)
-            print(response_one_percentage)
-            print(response_two_percenttage)
+           
 
          # Catch exception when HORNET node API is down
         except Exception as error_message:
