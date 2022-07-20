@@ -24,7 +24,7 @@ coingecko_url_coin = f"https://api.coingecko.com/api/v3/coins/{coin_id}"
 # cache API requests to sqlite for 300 seconds
 requests_cache.install_cache(cache_name='api_cache', expire_after = 300)
 # discord channels filtering
-discord_channels = [997121969969451070]
+discord_channels = [738665041217323068] # Discord channel enabled for replies
 
 class ReplyClient(discord.Client):
     # define sleep_switch to zero
@@ -52,7 +52,7 @@ class ReplyClient(discord.Client):
         # Votes section
         if message.content.casefold() in self.votecommands and message.channel.id in discord_channels:
             if voting_enabled == 1:
-                print("voting is enabled")
+                
                 try:
                     vote_response = requests.get(url = combined_participation_plugin_url,headers=head)
 
@@ -74,15 +74,12 @@ class ReplyClient(discord.Client):
                         # after posting the embed message go to sleep
                         sleep_thread.start()
                     else:
-                        print("sleep switch = " + str(self.sleep_switch))
-                        print("we should be here")
                         # react to the message
                         await message.add_reaction("😠")
 
                 else:
-                    print("not it works well")
                     vote_response_reply = json.loads(vote_response.text)
-                    print("in the try")
+                    
                     # Get results of two options from the node API
                     response_one_output = vote_response_reply["data"]["questions"][0]["answers"][0]["current"]
                     response_two_output = vote_response_reply["data"]["questions"][0]["answers"][1]["current"]
@@ -99,7 +96,6 @@ class ReplyClient(discord.Client):
                     # let's read the message
                     # as long as the sleep_switch is off
                     if self.sleep_switch == 0:
-                        print("start to print vote")
                     # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
                         self.sleep_switch = 1    
                         
@@ -113,7 +109,7 @@ class ReplyClient(discord.Client):
 
                         # reply to the input/command with the embed
                         await message.channel.send(embed=embedVar)
-                        print("did we send?")
+                        
                         # print to the console if we are using the cache
                         print ("Used Cache: {0}".format(vote_response.from_cache))            
                         
@@ -125,7 +121,6 @@ class ReplyClient(discord.Client):
                     # since the sleep_switch is at 1, the bot will only add the reaction to a message and ignore further input/commands    
                     else:
                         print("sleep switch = " + str(self.sleep_switch))
-                        print("we should be here")
                         # react to the message
                         await message.add_reaction("😠")
             else:
@@ -144,8 +139,6 @@ class ReplyClient(discord.Client):
                     # after posting the embed message go to sleep
                     sleep_thread.start()
                 else:
-                        print("sleep switch = " + str(self.sleep_switch))
-                        print("we should be here")
                         # react to the message
                         await message.add_reaction("😠")
                 
