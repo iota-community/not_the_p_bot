@@ -28,13 +28,14 @@ coingecko_url_shimmer = f"htts://api.coingecko.com/api/v3/coins/{coin_id_shimmer
 requests_cache.install_cache(cache_name='api_cache', expire_after = 300)
 
 # discord channels filtering
-discord_channels = [738665041217323068] # Discord channel enabled for replies
+discord_channels = [997121969969451070]
 
 class ReplyClient(discord.Client):
     # define sleep_switch to zero
     sleep_switch = 0
     # define input/commands to trigger bot
-    speccommands = ['p', 'price', 'rice', '🍚']
+    speccommands_iota = ['p', 'price', 'rice', '🍚']
+    speccommands_shimmer = ['pp', 'pprice', 'ice', '🍦']
     votecommands = ['results', '🗳️']
 
     # define sleep period, during this time the embed will not be posted to Discord
@@ -78,12 +79,15 @@ class ReplyClient(discord.Client):
                         # after posting the embed message go to sleep
                         sleep_thread.start()
                     else:
+                        print("sleep switch = " + str(self.sleep_switch))
+                        print("we should be here")
                         # react to the message
                         await message.add_reaction("😠")
 
                 else:
+                    print("not it works well")
                     vote_response_reply = json.loads(vote_response.text)
-                    
+                    print("in the try")
                     # Get results of two options from the node API
                     response_one_output = vote_response_reply["data"]["questions"][0]["answers"][0]["current"]
                     response_two_output = vote_response_reply["data"]["questions"][0]["answers"][1]["current"]
@@ -100,7 +104,8 @@ class ReplyClient(discord.Client):
                     # let's read the message
                     # as long as the sleep_switch is off
                     if self.sleep_switch == 0:
-                        # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
+                        print("start to print vote")
+                    # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
                         self.sleep_switch = 1    
                         
                         embedcolor = 0xff7800
@@ -113,6 +118,7 @@ class ReplyClient(discord.Client):
 
                         # reply to the input/command with the embed
                         await message.channel.send(embed=embedVar)
+                        print("did we send?")
                         # print to the console if we are using the cache
                         print ("Used Cache: {0}".format(vote_response.from_cache))            
                         
@@ -123,6 +129,8 @@ class ReplyClient(discord.Client):
                         
                     # since the sleep_switch is at 1, the bot will only add the reaction to a message and ignore further input/commands    
                     else:
+                        print("sleep switch = " + str(self.sleep_switch))
+                        print("we should be here")
                         # react to the message
                         await message.add_reaction("😠")
             else:
@@ -141,16 +149,18 @@ class ReplyClient(discord.Client):
                     # after posting the embed message go to sleep
                     sleep_thread.start()
                 else:
+                        print("sleep switch = " + str(self.sleep_switch))
+                        print("we should be here")
                         # react to the message
                         await message.add_reaction("😠")
                 
-        ## Coingecko section
+        ## Coingecko IOTA section
         
-        if message.content.casefold() in self.speccommands and message.channel.id in discord_channels:    
+        if message.content.casefold() in self.speccommands_iota and message.channel.id in discord_channels:    
             try:
                 # request response from Coingecko API
                 coingecko_response_iota = requests.get(coingecko_url_iota)
-                # coingecko_response_shimmer = requests.get(coingecko_url_shimmer)
+
             # Catch exception when CoinGecko API is down
             except Exception as error_message:
                 
@@ -202,58 +212,132 @@ class ReplyClient(discord.Client):
                 #     marketcaprank_shimmer = "69 (nice!)"
                     
                 
-                # let's read the message
-                if message.content.casefold() in self.speccommands and message.channel.id in discord_channels:
-                    # as long as the sleep_switch is off
+                
+                # as long as the sleep_switch is off
+                if self.sleep_switch == 0:
+                # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
+                    self.sleep_switch = 1    
+                    
+                    # build the embed message
+                    # IOTA section
+                    embedVar_iota = discord.Embed(title =  str(prices_iota["name"]) + " #" + str(marketcaprank_iota), color = embedcolor)
+                    embedVar_iota.add_field(name = "USD", value = str(currentprice_iota), inline=True)
+                    embedVar_iota.add_field(name = "1h", value = str(change1hour_iota) + "%", inline=True)
+                    embedVar_iota.add_field(name = "24h", value = str(change24hours_iota) + "%", inline=True)
+                    embedVar_iota.add_field(name="Source", value="Coingecko", inline=False)
+                    
+
+                    # reply to the input/command with the embed
+                    await message.channel.send(embed=embedVar_iota)
+
+                    # print to the console if we are using the cache
+                    print ("Used Cache: {0}".format(coingecko_response_iota.from_cache))
+                    
+                    # define a thread for sleeping
+                    sleep_thread = threading.Thread(target=self.thread_sleep)
+                    # after posting the embed message go to sleep
+                    sleep_thread.start()
+                    
+                # since the sleep_switch is at 1, the bot will only add the reaction to a message and ignore further input/commands    
+                else:
+                    # react to the message
+                    await message.add_reaction("😠")
+    
+        ## Coingecko Shimmer section
+        
+        if message.content.casefold() in self.speccommands_shimmer and message.channel.id in discord_channels:    
+            try:
+                # request response from Coingecko API
+                coingecko_response_iota = requests.get(coingecko_url_iota)
+                # coingecko_response_shimmer = requests.get(coingecko_url_shimmer)
+            # Catch exception when CoinGecko API is down
+            except Exception as error_message:
+                
                     if self.sleep_switch == 0:
-                    # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
-                        self.sleep_switch = 1    
+                        # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
+                        self.sleep_switch = 1
                         
-                        # build the embed message
-                        # IOTA section
-                        embedVar_iota = discord.Embed(title =  str(prices_iota["name"]) + " #" + str(marketcaprank_iota), color = embedcolor)
-                        embedVar_iota.add_field(name = "USD", value = str(currentprice_iota), inline=True)
-                        embedVar_iota.add_field(name = "1h", value = str(change1hour_iota) + "%", inline=True)
-                        embedVar_iota.add_field(name = "24h", value = str(change24hours_iota) + "%", inline=True)
-                        embedVar_iota.add_field(name="Source", value="Coingecko", inline=False)
-
-                        # Shimmer section
-                        # uncomment once Shimmer is listed on Coingecko
-                        # embedVar_iota = discord.Embed(title = str(prices_shimmer["name"]) + " #" + str(marketcaprank_shimmer))
-                        # embedVar_shimmer.add_field(name = "USD", value = str(currentprice_shimmer), inline=True)
-                        # embedVar_shimmer.add_field(name = "1h", value = str(change1hour_shimmer) + "%", inline=True)
-                        # embedVar_shimmer.add_field(name = "24h", value = str(change24hours_shimmer) + "%", inline=True)
-                        # embedVar_shimmer.add_field(name="Source", value="Coingecko", inline=False)
-
-                        # Delete this section once Shimmer is listed on Coingecko
-                        embedVar_shimmer = discord.Embed(title = "Shimmer #1 in our hearts", color = embedcolor)
-                        embedVar_shimmer.add_field(name = "USD", value = "0", inline=True)
-                        embedVar_shimmer.add_field(name = "1h", value = "0" + "%", inline=True)
-                        embedVar_shimmer.add_field(name = "24h", value = "0" + "%", inline=True)
-                        embedVar_shimmer.add_field(name="Source", value="NO MARKET DATA AVAILABLE", inline=False)
-
-                        # Stop delete
-
-                        
-
-                        # reply to the input/command with the embed
-                        await message.channel.send(embed=embedVar_iota)
-                        await message.channel.send(embed=embedVar_shimmer)
-
-                        # print to the console if we are using the cache
-                        print ("Used Cache: {0}".format(coingecko_response_iota.from_cache))
-                        # print ("Used Cache: {0}".format(coingecko_response_shimmer.from_cache))
-
+                        # build embed error message
+                        cgapiembedVar=discord.Embed(title = "ERROR MESSAGE", color=0xe01b24)
+                        cgapiembedVar.add_field(name="Error type", value="CoinGecko API is down", inline=True)
+                        cgapiembedVar.add_field(name="Info", value="Verify status at https://status.coingecko.com", inline=True)
+                        await message.channel.send(embed=cgapiembedVar)
                         
                         # define a thread for sleeping
                         sleep_thread = threading.Thread(target=self.thread_sleep)
+                        
                         # after posting the embed message go to sleep
                         sleep_thread.start()
-                        
-                    # since the sleep_switch is at 1, the bot will only add the reaction to a message and ignore further input/commands    
                     else:
-                        # react to the message
-                        await message.add_reaction("😠")
+                        await message.add_reaction("🪲")
+            
+            else:
+                # load the json to extract the data we are looking for
+                # prices_shimmer = json.loads(coingecko_response_iota.text)
+            
+                # # fill variables
+                # marketcaprank_shimmer = prices_shimmer["market_cap_rank"]
+                # currentprice_shimmer = round(prices_shimmer["market_data"]["current_price"]["usd"], 4)
+                # change24hours_shimmer = round(prices_shimmer["market_data"]["price_change_percentage_24h"], 1)
+                # change1hour_shimmer = round(prices_shimmer["market_data"]["price_change_percentage_1h_in_currency"]["usd"], 2)
+                
+                # # change color of the embed based on the value of the change1hour variable
+                # if change1hour_shimmer >= 0:
+                #     if change1hour_shimmer == 0:
+                #         embedcolor = 0xff7800
+                #     else:
+                #         embedcolor = 0x33d17a
+                # else:
+                #     embedcolor = 0xe01b24
+                    
+            
+                # # Shimmer nice
+                # if marketcaprank_shimmer == 69:
+                #     marketcaprank_shimmer = "69 (nice!)"
+                    
+                
+               
+                # as long as the sleep_switch is off
+                if self.sleep_switch == 0:
+                # Set the sleep_switch to 1 so that the bot only adds reactions instead of posting the embed
+                    self.sleep_switch = 1    
+                    
+                    # build the embed message
+
+                    # Shimmer section
+                    # uncomment once Shimmer is listed on Coingecko
+                    # embedVar_iota = discord.Embed(title = str(prices_shimmer["name"]) + " #" + str(marketcaprank_shimmer), color = embedcolor)
+                    # embedVar_shimmer.add_field(name = "USD", value = str(currentprice_shimmer), inline=True)
+                    # embedVar_shimmer.add_field(name = "1h", value = str(change1hour_shimmer) + "%", inline=True)
+                    # embedVar_shimmer.add_field(name = "24h", value = str(change24hours_shimmer) + "%", inline=True)
+                    # embedVar_shimmer.add_field(name="Source", value="Coingecko", inline=False)
+
+                    # Delete this section once Shimmer is listed on Coingecko
+                    embedVar_shimmer = discord.Embed(title = "Shimmer #1 in our hearts", color = 0xff7800)
+                    embedVar_shimmer.add_field(name = "USD", value = "0", inline=True)
+                    embedVar_shimmer.add_field(name = "1h", value = "0" + "%", inline=True)
+                    embedVar_shimmer.add_field(name = "24h", value = "0" + "%", inline=True)
+                    embedVar_shimmer.add_field(name="Source", value="NO MARKET DATA AVAILABLE", inline=False)
+                    # Stop delete
+
+                    
+
+                    # reply to the input/command with the embed
+                    await message.channel.send(embed=embedVar_shimmer)
+
+                    # print to the console if we are using the cache
+                    # print ("Used Cache: {0}".format(coingecko_response_shimmer.from_cache))
+
+                    
+                    # define a thread for sleeping
+                    sleep_thread = threading.Thread(target=self.thread_sleep)
+                    # after posting the embed message go to sleep
+                    sleep_thread.start()
+                    
+                # since the sleep_switch is at 1, the bot will only add the reaction to a message and ignore further input/commands    
+                else:
+                    # react to the message
+                    await message.add_reaction("😠")
     
 
                 
