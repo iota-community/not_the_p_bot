@@ -88,18 +88,28 @@ class ReplyClient(discord.Client):
                     print("not it works well")
                     vote_response_reply = json.loads(vote_response.text)
                     print("in the try")
-                    # Get results of two options from the node API
-                    response_one_output = vote_response_reply["data"]["questions"][0]["answers"][0]["current"]
-                    response_two_output = vote_response_reply["data"]["questions"][0]["answers"][1]["current"]
+                     # Get results of two options from the node API
+                    response_one_current = vote_response_reply["data"]["questions"][0]["answers"][0]["current"]
+                    response_two_current = vote_response_reply["data"]["questions"][0]["answers"][1]["current"]
+                    response_one_accumulated = vote_response_reply["data"]["questions"][0]["answers"][0]["accumulated"]
+                    response_two_accumulated = vote_response_reply["data"]["questions"][0]["answers"][1]["accumulated"]
                     # Format results
-                    response_one_formatted = "{:,.0f}".format(response_one_output)
-                    response_two_formatted = "{:,.0f}".format(response_two_output)
+                    response_one_current_formatted = "{:,.0f}".format(response_one_current)
+                    response_two_current_formatted = "{:,.0f}".format(response_two_current)
+                    response_one_accumulated_formatted = "{:,.0f}".format(response_one_accumulated)
+                    response_two_accumulated_formatted = "{:,.0f}".format(response_two_accumulated)   
+
+                    # Caluclate current percentage P = V/T * 100
+                    responses_total_current = response_one_current + response_two_current
                     
-                    # Caluclate percentage P = V/T * 100
-                    responses_total = response_one_output + response_two_output
+                    response_one_current_percentage = round((response_one_current/responses_total_current) * 100, 2)
+                    response_two_current_percentage = round((response_two_current/responses_total_current) * 100, 2)
                     
-                    response_one_percentage = round((response_one_output/responses_total) * 100, 2)
-                    response_two_percenttage = round((response_two_output/responses_total) * 100, 2)
+                    # Caluclate accumulated percentage P = V/T * 100
+                    responses_total_accumulated = response_one_accumulated + response_two_accumulated
+                    
+                    response_one_accumulated_percentage = round((response_one_accumulated/responses_total_accumulated) * 100, 2)
+                    response_two_accumulated_percentage = round((response_two_accumulated/responses_total_accumulated) * 100, 2)
                 
                     # let's read the message
                     # as long as the sleep_switch is off
@@ -110,11 +120,14 @@ class ReplyClient(discord.Client):
                         
                         embedcolor = 0xff7800
                         # build the embed message
+                        # build the embed message
                         embedVar=discord.Embed(title =  "IOTA vote progress", color = embedcolor)
                         embedVar.add_field(name="Vote context", value="Should we incentivize builders and activity on the Shimmer network by increasing the token supply to give the Shimmer Community Treasury DAO and the Tangle Ecosystem Association (TEA) each 10% of the new total supply?", inline=False)
-                        embedVar.add_field(name="Yes", value=str(response_one_percentage) + " % - " + str(response_one_formatted) + "Ki", inline=True)
-                        embedVar.add_field(name="No", value=str(response_two_percenttage) + " % - " + str(response_two_formatted) + " Ki", inline=True)
+                        
+                        embedVar.add_field(name="Yes", value = str(response_one_accumulated_formatted) + " Votes" + " (" + str(response_one_accumulated_percentage) + " %) " + str(response_one_current_formatted) + " Ki voting", inline=True)
+                        embedVar.add_field(name="No", value = str(response_two_accumulated_formatted) + " Votes" + " (" + str(response_two_accumulated_percentage) + " %) " + str(response_two_current_formatted) + " Ki voting", inline=True)
                         embedVar.add_field(name="Source", value="NÄRD Tech Node", inline=False)
+                        embedVar.add_field(name="Learn how values are calculated", value="https://iotatreasury.org/how-voting-works.html", inline=False)
 
                         # reply to the input/command with the embed
                         await message.channel.send(embed=embedVar)
